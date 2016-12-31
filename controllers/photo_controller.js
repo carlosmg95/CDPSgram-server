@@ -1,49 +1,46 @@
 var fs = require('fs');
-var photo_model = require('./../models/photo');
+var model = require('./../models');
 
 // Devuelve una lista de las imagenes disponibles y sus metadatos
-exports.list = function (req, res) {
-	var photos = photo_model.photos;
-	res.render('photos/index', {photos: photos});
+exports.list = function (req, res, next) {
+    model.Photo.findAll({ order: ['name'] }).then(function(photos) {
+        res.render('photos/index', {photos: photos});
+    }).catch(function(error) {
+        next(error);
+    });
 };
 
 // Devuelve la vista del formulario para subir una nueva foto
 exports.new = function (req, res) {
-	res.render('photos/new');
+    res.render('photos/new');
 };
 
 // Devuelve la vista de visualización de una foto.
 // El campo photo.url contiene la url donde se encuentra el fichero de audio
-exports.show = function (req, res) {
-	var photo = photo_model.photos[req.params.photoId];
-	photo.id = req.params.photoId;
-	res.render('photos/show', {photo: photo});
+exports.show = function (req, res, next) {
+    console.log(req.params.photoId)
+    model.Photo.findById(req.params.photoId).then(function(photo) {
+        photo.id = req.params.photoId;
+        res.render('photos/show', {photo: photo});
+    }).catch(function(error) {
+        next(error);
+    });
 };
 
 // Escribe una nueva foto en el registro de imagenes.
 exports.create = function (req, res) {
-	var photo = req.files.photo;
-	console.log('Nuevo fichero: ', req.body);
-	var name = req.body.name;
-	var url = req.body.url;
-	var id = Math.random().toString(36).substr(2, 10);
-	
-	// Escribe los metadatos de la nueva foto en el registro.
-	photo_model.photos[id] = {
-		name: name,
-		url: url
-	};
-
-	res.redirect('/photos');
+    var photo = model.Photo.build({ name: req.body.name, url: req.body.url });
+    console.log('Nuevo fichero: ', req.body);
+    return photo.save({ fields: [ 'name', 'url' ]}).then(function() {
+        res.redirect('/photos');
+    })
 };
 
 // Borra una foto (photoId) del registro de imagenes 
 exports.destroy = function (req, res) {
-	var photoId = req.params.photoId;
-
-	// Aquí debe implementarse el borrado del fichero de audio indetificado por photoId en photos.cdpsfy.es
-
-	// Borra la entrada del registro de datos
-	delete photo_model.photos[photoId];
-	res.redirect('/photos');
+    model.Photo.findById(req.params.photoId).then(function(photo) {
+        photo.destroy().then(function() {
+            res.redirect('/photos');
+        });
+    });  
 };
