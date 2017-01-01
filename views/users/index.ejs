@@ -1,0 +1,8 @@
+<div id="usuarios">
+    <ul>
+        <% for(var i in users) { %>
+        <li><a href="/users/<%= users[i].id %>" class="user"><%= users[i].username %></a></li>
+        <% } %>
+    </ul>
+    <p id="new"><a href="/users/new"><button id="new">Nuevo usuario</button></a></p>
+</div>

@@ -1,0 +1,58 @@
+<script>
+    function confirmPassword() {
+        var pw1 = $('#user_password').val();
+        var pw2 = $('#user_confirm_password').val();
+        var username = $('#username').val();
+        var nCaracteresPass = 4;
+        var nCaracteresName = 35;
+
+        if (!pw1 || !pw2) {
+            alert('Debe rellenar los campos de Password y Confirmación.');
+            return false;
+        }
+
+        if(pw1.length <= nCaracteresPass - 1) {
+            alert('La contraseña debe tener mínimo ' + nCaracteresPass + ' caracteres');
+            return false;
+        }
+
+        if(username.length >= nCaracteresName - 1) {
+            alert('El nombre no puede tener más de ' + nCaracteresName + ' caracteres');
+            return false;
+        }
+
+        if (pw1 === pw2) {
+            return true;
+        } else {
+            alert('Los passwords introducidos no coinciden.');
+            return false;
+        }
+    }
+</script>
+
+<table>
+    <tr>
+        <td><label for="preg">Username:</label></td>
+        <% if (!user.id) { %>           
+            <td><input type="text" id="username" name="username" value="<%= user.username %>"/></td>
+        <% } else { %>
+            <td><%= user.username %></td>
+        <% } %>
+    </tr>
+
+    <tr>
+        <td><label for="user_password">Password:</label></td>
+        <td><input type="password" id="user_password" name="password"/></td>
+    </tr>
+
+    <tr>
+        <td><label for="user_confirm_password">Confirmar Password:</label></td>
+        <td><input type="password" id="user_confirm_password" /></td>
+    </tr>
+
+</table>
+
+<div class="botones">
+    <input type="submit" value="Guardar" onclick="return confirmPassword()" id="guardar">
+    <a href="/"><button type="button" id="cancelar">Cancelar</button></a>
+</div>

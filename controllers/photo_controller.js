@@ -1,9 +1,9 @@
 var fs = require('fs');
-var model = require('./../models');
+var models = require('./../models');
 
 // Devuelve una lista de las imagenes disponibles y sus metadatos
 exports.list = function (req, res, next) {
-    model.Photo.findAll({ order: ['name'] }).then(function(photos) {
+    models.Photo.findAll({ order: ['name'] }).then(function(photos) {
         res.render('photos/index', {photos: photos});
     }).catch(function(error) {
         next(error);
@@ -19,7 +19,7 @@ exports.new = function (req, res) {
 // El campo photo.url contiene la url donde se encuentra el fichero de audio
 exports.show = function (req, res, next) {
     console.log(req.params.photoId)
-    model.Photo.findById(req.params.photoId).then(function(photo) {
+    models.Photo.findById(req.params.photoId).then(function(photo) {
         photo.id = req.params.photoId;
         res.render('photos/show', {photo: photo});
     }).catch(function(error) {
@@ -29,7 +29,7 @@ exports.show = function (req, res, next) {
 
 // Escribe una nueva foto en el registro de imagenes.
 exports.create = function (req, res) {
-    var photo = model.Photo.build({ name: req.body.name, url: req.body.url });
+    var photo = models.Photo.build({ name: req.body.name, url: req.body.url });
     console.log('Nuevo fichero: ', req.body);
     return photo.save({ fields: [ 'name', 'url' ]}).then(function() {
         res.redirect('/photos');
@@ -37,10 +37,12 @@ exports.create = function (req, res) {
 };
 
 // Borra una foto (photoId) del registro de imagenes 
-exports.destroy = function (req, res) {
-    model.Photo.findById(req.params.photoId).then(function(photo) {
+exports.destroy = function (req, res, next) {
+    models.Photo.findById(req.params.photoId).then(function(photo) {
         photo.destroy().then(function() {
             res.redirect('/photos');
         });
+    }).catch(function(error) {
+        next(error);
     });  
 };
