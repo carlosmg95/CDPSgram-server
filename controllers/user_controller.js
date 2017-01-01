@@ -33,12 +33,11 @@ exports.create = function(req, res, next) {
     models.User.find({ where: { username: req.body.username }}).then(function(existing_user) {
         if(existing_user) {
             var emsg = 'El usuario \"' + req.body.username + '\" ya exite.';
-            //req.flash('error', emsg);
             res.render('users/new', { user: user });
         } else {
             // Guardar en la BBDD
             return user.save({ fields: [ 'username', 'password', 'salt' ]}).then(function(user) {  // Renderiza página de usuarios
-                res.redirect('/');
+                res.redirect('/session');
             }).catch(Sequelize.ValidationError, function(error) {
                 res.render('users/new', { user: user });
             });
@@ -84,9 +83,13 @@ exports.update = function(req, res, next) {
 exports.destroy = function(req, res, next)  {
     models.User.findById(req.params.userId).then(function(user) {
         user.destroy().then(function() {
+            // Borrando usuario logueado
+            if(req.session.user && req.session.user.id === user.id) {
+                delete req.session.user
+            }
             res.redirect('/users');
         });
     }).catch(function(error) {
         next(error);
-    }); 
+    });
 };

@@ -6,6 +6,7 @@ var photos_dir = process.env.PHOTOS_DIR || './media/';
 
 var photoController = require('../controllers/photo_controller');
 var userController = require('../controllers/user_controller');
+var sessionController = require('../controllers/session_controller');
 
 router.get('/', function(req, res) {
   res.render('index');
@@ -26,5 +27,10 @@ router.post('/users', userController.create);                   // Registrar usu
 router.get('/users/:userId(\\d+)/edit', userController.edit);   // Editar cuenta
 router.put('/users/:userId(\\d+)', userController.update);      // Actualizar cuenta
 router.delete('/users/:userId(\\d+)', userController.destroy);  // Borrar cuenta
+
+/* Definición de rutas de sesiones */
+router.get('/session', sessionController.new);          // Formulario login
+router.post('/session', sessionController.create);      // Crear sesión
+router.delete('/session', sessionController.destroy);   // Destruir sesión
 
 module.exports = router;

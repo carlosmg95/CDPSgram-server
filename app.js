@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
+var session = require('express-session');
 var methodOverride = require('method-override');
 
 var routes = require('./routes/index');
@@ -22,9 +23,35 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({ secret: 'CDPSgram', resave: false, saveUninitialized: true }));
 app.use(methodOverride('_method', {methods: ['POST', 'GET']}));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+  if(req.session.user) {
+    var timeout = 120000;
+    var currentTime = new Date().getTime();
+    if((currentTime - req.session.user.inicio) >= timeout ) {
+      delete req.session.user;
+      next();
+    } else {
+      req.session.user.inicio = currentTime;
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+// Helper dinámico:
+app.use(function(req, res, next) {
+  // Hace visible req.session en las vistas
+  res.locals.session = req.session;
+  
+  next();
+});
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler

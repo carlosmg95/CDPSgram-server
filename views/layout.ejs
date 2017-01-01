@@ -15,6 +15,15 @@
 	    		<li><a href="/photos">My photos</a></li>
 	    		<li><a href="/photos/new">Upload new photo</a></li>
           <li><a href="/users">Users</a></li>
+          <% if(!session.user) { %>
+          <li><a href="/users/new">New user</a></li>
+          <li><a href="/session">Login</a></li>
+          <% } else { %>
+          <br/>
+          <li><%= session.user.username %></li>
+          <li><a href="/users/<%= session.user.id %>">Profile</a></li>
+          <li><a href="/session?_method=DELETE">Logout</a></li>
+          <% } %>
 	    	</ul>
 	    </div>
 	    <div id="container-body"><%- body %></div>
