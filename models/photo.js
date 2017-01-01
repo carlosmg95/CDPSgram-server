@@ -10,10 +10,12 @@ photo_id: {
 */
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(    'Photos',
-                                {
-                                    name: DataTypes.STRING,
-                                    url: DataTypes.STRING
-                                }
-                            );
+    return sequelize.define(
+    	'Photos',
+        
+        {
+        	name: DataTypes.STRING,
+        	url: DataTypes.STRING
+        }
+    );
 };
