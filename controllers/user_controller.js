@@ -13,7 +13,9 @@ exports.index = function(req, res, next) {
 // GET /users/:id
 exports.show = function(req, res, next) {
     models.User.findById(req.params.userId).then(function(user) {
-        res.render('users/show', { user: user });
+        user.getPhotos().then(function(photos) {
+            res.render('users/show', { user: user, photos: photos });
+        });
     }).catch(function(error) {
         next(error);
     });
@@ -83,11 +85,19 @@ exports.update = function(req, res, next) {
 exports.destroy = function(req, res, next)  {
     models.User.findById(req.params.userId).then(function(user) {
         user.destroy().then(function() {
-            // Borrando usuario logueado
-            if(req.session.user && req.session.user.id === user.id) {
-                delete req.session.user
-            }
-            res.redirect('/users');
+            user.getPhotos().then(function(photos) {
+                for(var photo in photos) {
+                    photos[photo].AuthorId = 0
+                    photos[photo].save({ fields: [ 'AuthorId' ]});
+                }
+                // Borrando usuario logueado
+                if(req.session.user && req.session.user.id === user.id) {
+                    delete req.session.user
+                }
+                res.redirect('/users');
+            }).catch(function(error) {
+                next(error);
+            });
         });
     }).catch(function(error) {
         next(error);

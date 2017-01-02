@@ -21,10 +21,14 @@ if(!process.env.DATABASE_URL) {
 
 var sequelize = new Sequelize(url, {storage: storage, omitNull: true});
 
-// Importar la definicion de las tablas
+/* Importar la definicion de las tablas */
 var Photo = sequelize.import(path.join(__dirname, 'photo'));
 var User = sequelize.import(path.join(__dirname, 'user'));
 
-// Exportar definición de tablas
-exports.Photo = Photo;              // Exportar la tabla Photo
-exports.User = User;              // Exportar la tabla User
+/* Relación users y photos */
+User.hasMany(Photo, { foreignKey: 'AuthorId' });
+Photo.belongsTo(User, { as: 'Author', foreignKey: 'AuthorId' });
+
+/* Exportar definición de tablas */
+exports.Photo = Photo;		// Exportar la tabla Photo
+exports.User = User;		// Exportar la tabla User

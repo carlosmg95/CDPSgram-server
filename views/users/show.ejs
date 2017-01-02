@@ -9,6 +9,13 @@
             <td><em>(Admin)</em></td>
             <% } %>
         </tr>
+        <br/>
+        <tr>
+            <td><strong>Photos:</strong></td>
+            <% for(var photo in photos) { %>
+            <td><a href="/photos/<%= photos[photo].id %>"><%= photos[photo].name %></a></td>
+            <% } %>
+        </tr>
     </table>    
 
     <div class="botones">
